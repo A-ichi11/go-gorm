@@ -97,33 +97,50 @@ func inserts(db *gorm.DB) {
 
 // 単体取得
 func getOne(db *gorm.DB) {
-	firstUser := User{}
+	user1 := User{}
 
 	// SELECT * FROM users ORDER BY id LIMIT 1;
 	// 昇順で単体取得
-	result := db.First(&firstUser)
-	fmt.Println("first:", firstUser)
-	if result.Error != nil {
-		log.Fatal(result.Error)
+	result1 := db.First(&user1)
+	fmt.Println("first:", user1)
+	if result1.Error != nil {
+		log.Fatal(result1.Error)
 	}
-	fmt.Println("count:", result.RowsAffected)
+	fmt.Println("count:", result1.RowsAffected)
 
 	// check error ErrRecordNotFound
-	errors.Is(result.Error, gorm.ErrRecordNotFound)
+	errors.Is(result1.Error, gorm.ErrRecordNotFound)
 
 	// SELECT * FROM users LIMIT 1;
-
 	// 何も指定せず、単体取得
-	takeUser := User{}
-	db.Take(&takeUser)
-	fmt.Println("take:", takeUser)
+	user2 := User{}
+	result2 := db.Take(&user2)
+	fmt.Println("take:", user2)
+	if result2.Error != nil {
+		log.Fatal(result2.Error)
+	}
 
 	// SELECT * FROM users ORDER BY id DESC LIMIT 1;
-
-	lastUser := User{}
+	user3 := User{}
 	// 降順で単体取得
-	db.Last(&lastUser)
-	fmt.Println("last:", lastUser)
+	result3 := db.Last(&user3)
+	fmt.Println("last:", user3)
+	if result3.Error != nil {
+		log.Fatal(result3.Error)
+	}
+
+	// プライマリーキーで取得
+	user4 := User{}
+	result4 := db.First(&user4, 2)
+	if result4.Error != nil {
+		log.Fatal(result4.Error)
+	}
+
+	user5 := User{}
+	result5 := db.First(&user5, "id = ?", 3)
+	if result5.Error != nil {
+		log.Fatal(result5.Error)
+	}
 
 }
 
