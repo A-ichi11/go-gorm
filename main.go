@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -17,6 +18,7 @@ type Product struct {
 type User struct {
 	// gorm.Modelをつけると、idとCreatedAtとUpdatedAtとDeletedAtが作られる
 	gorm.Model
+
 	Name     string
 	Age      int
 	IsActive bool
@@ -25,12 +27,22 @@ type User struct {
 func main() {
 	db := dbInit()
 
-	db.AutoMigrate(&Product{})
-	db.AutoMigrate(&User{})
-	// getOne(db)
-	find(db)
+	// db.AutoMigrate(&Product{})
+	// db.AutoMigrate(&User{})
+
+	// 単体取得
+	getOne(db)
+
+	// 複数取得
+	// find(db)
+
+	// 単体追加
 	// insert(db)
+
+	// 複数追加
 	// inserts(db)
+
+	// delete(db)
 }
 
 func dbInit() *gorm.DB {
@@ -44,45 +56,74 @@ func dbInit() *gorm.DB {
 
 // 単体作成
 func insert(db *gorm.DB) {
+	// t := true
 	user := User{
 		Name: "太郎",
+		Age:  20,
+		// IsActive: &t,
 	}
 	result := db.Create(&user)
-	fmt.Println("result:", result)
-	fmt.Println("error:", result.Error)
-	fmt.Println("rowAffeted", result.RowsAffected)
+	if result.Error != nil {
+		log.Fatal(result.Error)
+	}
+	fmt.Println("count:", result.RowsAffected)
 }
 
 // 複数作成
 func inserts(db *gorm.DB) {
-	users := []User{{Name: "花子"}, {Name: "龍太郎"}, {Name: "太一"}}
+	users := []User{
+		{
+			Name:     "花子",
+			Age:      25,
+			IsActive: true,
+		},
+		{
+			Name:     "龍太郎",
+			Age:      30,
+			IsActive: false,
+		},
+		{
+			Name:     "太一",
+			Age:      35,
+			IsActive: false,
+		},
+	}
 	result := db.Create(&users)
-	fmt.Println("result:", result)
-	fmt.Println("error:", result.Error)
-	fmt.Println("rowAffeted", result.RowsAffected)
+	if result.Error != nil {
+		log.Fatal(result.Error)
+	}
+	fmt.Println("count:", result.RowsAffected)
 }
 
 // 単体取得
 func getOne(db *gorm.DB) {
-	user := User{}
+	firstUser := User{}
 
 	// SELECT * FROM users ORDER BY id LIMIT 1;
-	result := db.First(&user)
-	fmt.Println("user:", user)
-	fmt.Println("result:", result)
-	fmt.Println("error:", result.Error)
-	fmt.Println("rowAffeted", result.RowsAffected)
+	// 昇順で単体取得
+	result := db.First(&firstUser)
+	fmt.Println("first:", firstUser)
+	if result.Error != nil {
+		log.Fatal(result.Error)
+	}
+	fmt.Println("count:", result.RowsAffected)
 
 	// check error ErrRecordNotFound
 	errors.Is(result.Error, gorm.ErrRecordNotFound)
 
 	// SELECT * FROM users LIMIT 1;
-	db.Take(&user)
-	fmt.Println("user:", user)
+
+	// 何も指定せず、単体取得
+	takeUser := User{}
+	db.Take(&takeUser)
+	fmt.Println("take:", takeUser)
 
 	// SELECT * FROM users ORDER BY id DESC LIMIT 1;
-	db.Last(&user)
-	fmt.Println("user:", user)
+
+	lastUser := User{}
+	// 降順で単体取得
+	db.Last(&lastUser)
+	fmt.Println("last:", lastUser)
 
 }
 
@@ -91,9 +132,10 @@ func find(db *gorm.DB) {
 	users := []User{}
 	result := db.Find(&users)
 	fmt.Println("user:", users)
-	fmt.Println("result:", result)
-	fmt.Println("error:", result.Error)
-	fmt.Println("rowAffeted", result.RowsAffected)
+	if result.Error != nil {
+		log.Fatal(result.Error)
+	}
+	fmt.Println("count:", result.RowsAffected)
 }
 
 // 全件取得
@@ -126,15 +168,17 @@ func updates(db *gorm.DB) {
 }
 
 // 削除
+// gorm.DeletedAt フィールドがモデルに含まれている場合、そのモデルは自動的に論理削除されるようになります。
+// 論理削除されたレコードは取得処理時に無視されます
 func delete(db *gorm.DB) {
 	db.Where("id = 1").Delete(&User{})
 	// DELETE FROM users WHERE id = 1;
 
-	db.Delete(&User{}, 1)
+	// db.Delete(&User{}, 1)
 	// DELETE FROM users WHERE id = 1;
 
-	users := []User{}
-	db.Delete(&users, []int{1, 2, 3})
+	// users := []User{}
+	// db.Delete(&users, []int{1, 2, 3})
 	// DELETE FROM users WHERE id IN (1,2,3);
 
 }
