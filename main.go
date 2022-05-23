@@ -28,7 +28,7 @@ func main() {
 	db := dbInit()
 
 	// db.AutoMigrate(&Product{})
-	// db.AutoMigrate(&User{})
+	db.AutoMigrate(&User{})
 
 	// 単体取得
 	getOne(db)
@@ -97,51 +97,48 @@ func inserts(db *gorm.DB) {
 
 // 単体取得
 func getOne(db *gorm.DB) {
-	user1 := User{}
 
-	// SELECT * FROM users ORDER BY id LIMIT 1;
 	// 昇順で単体取得
+	user1 := User{}
 	result1 := db.First(&user1)
+	// SELECT * FROM users ORDER BY id LIMIT 1;
 	fmt.Println("first:", user1)
-	if result1.Error != nil {
+	// check error ErrRecordNotFound
+	if errors.Is(result1.Error, gorm.ErrRecordNotFound) {
 		log.Fatal(result1.Error)
 	}
 	fmt.Println("count:", result1.RowsAffected)
 
-	// check error ErrRecordNotFound
-	errors.Is(result1.Error, gorm.ErrRecordNotFound)
-
-	// SELECT * FROM users LIMIT 1;
 	// 何も指定せず、単体取得
 	user2 := User{}
 	result2 := db.Take(&user2)
+	// SELECT * FROM users LIMIT 1;
 	fmt.Println("take:", user2)
-	if result2.Error != nil {
+	if errors.Is(result2.Error, gorm.ErrRecordNotFound) {
 		log.Fatal(result2.Error)
 	}
 
-	// SELECT * FROM users ORDER BY id DESC LIMIT 1;
-	user3 := User{}
 	// 降順で単体取得
+	user3 := User{}
 	result3 := db.Last(&user3)
+	// SELECT * FROM users ORDER BY id DESC LIMIT 1;
 	fmt.Println("last:", user3)
-	if result3.Error != nil {
+	if errors.Is(result3.Error, gorm.ErrRecordNotFound) {
 		log.Fatal(result3.Error)
 	}
 
 	// プライマリーキーで取得
 	user4 := User{}
 	result4 := db.First(&user4, 2)
-	if result4.Error != nil {
+	if errors.Is(result4.Error, gorm.ErrRecordNotFound) {
 		log.Fatal(result4.Error)
 	}
 
 	user5 := User{}
 	result5 := db.First(&user5, "id = ?", 3)
-	if result5.Error != nil {
+	if errors.Is(result5.Error, gorm.ErrRecordNotFound) {
 		log.Fatal(result5.Error)
 	}
-
 }
 
 // 複数取得
