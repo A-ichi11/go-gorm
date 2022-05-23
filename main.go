@@ -31,7 +31,7 @@ func main() {
 	db.AutoMigrate(&User{})
 
 	// 単体取得
-	getOne(db)
+	// getOne(db)
 
 	// 複数取得
 	// find(db)
@@ -43,6 +43,9 @@ func main() {
 	// inserts(db)
 
 	// delete(db)
+
+	// 更新
+	save(db)
 }
 
 func dbInit() *gorm.DB {
@@ -141,7 +144,7 @@ func getOne(db *gorm.DB) {
 	}
 }
 
-// 複数取得
+// 全件取得
 func find(db *gorm.DB) {
 	users := []User{}
 	result := db.Find(&users)
@@ -159,15 +162,19 @@ func scan(db *gorm.DB) {
 	fmt.Println("user:", users)
 }
 
-// 更新(全てのカラム更新)
+// 更新(add?)
 func save(db *gorm.DB) {
 	user := User{}
 	db.First(&user)
-
-	user.Name = "太郎"
-	db.Save(&user)
-	// UPDATE users SET name='jinzhu 2', age=100, birthday='2016-01-01', updated_at = '2013-11-17 21:34:10' WHERE id=111;
-	// Saveは 、SQLを実行するときにすべてのフィールドを更新します。
+	user.Name = "花子"
+	result := db.Save(&user)
+	if result.Error != nil {
+		log.Fatal(result.Error)
+	}
+	fmt.Println("count:", result.RowsAffected)
+	fmt.Println("save:", user)
+	db.Find(&user)
+	fmt.Println("find:", user)
 }
 
 // 単一のカラムを更新する
