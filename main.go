@@ -162,19 +162,30 @@ func scan(db *gorm.DB) {
 	fmt.Println("user:", users)
 }
 
-// 更新(add?)
+// 更新(upsert)
 func save(db *gorm.DB) {
-	user := User{}
-	db.First(&user)
-	user.Name = "花子"
-	result := db.Save(&user)
-	if result.Error != nil {
-		log.Fatal(result.Error)
+	// 構造体にidが無い場合はinsertされる
+	user1 := User{}
+	user1.Name = "花子"
+	result1 := db.Save(&user1)
+	if result1.Error != nil {
+		log.Fatal(result1.Error)
 	}
-	fmt.Println("count:", result.RowsAffected)
-	fmt.Println("save:", user)
-	db.Find(&user)
-	fmt.Println("find:", user)
+	fmt.Println("count:", result1.RowsAffected)
+	fmt.Println("user1:", user1)
+
+	// 先にユーザーを取得する
+	user2 := User{}
+	db.First(&user2)
+
+	// 構造体にidがある場合はupdateされる
+	user2.Name = "たけし"
+	result2 := db.Save(&user2)
+	if result2.Error != nil {
+		log.Fatal(result2.Error)
+	}
+	fmt.Println("count:", result2.RowsAffected)
+	fmt.Println("user2:", user2)
 }
 
 // 単一のカラムを更新する
