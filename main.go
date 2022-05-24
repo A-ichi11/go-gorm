@@ -44,8 +44,14 @@ func main() {
 
 	// delete(db)
 
-	// 更新
-	save(db)
+	// 更新(upsert)
+	// save(db)
+
+	// 1つのカラムの更新
+	// update(db)
+
+	// 複数のカラムの更新
+	updates(db)
 }
 
 func dbInit() *gorm.DB {
@@ -190,13 +196,28 @@ func save(db *gorm.DB) {
 
 // 単一のカラムを更新する
 func update(db *gorm.DB) {
-	db.Model(&User{}).Where("id = 1").Update("name", "たかし")
+	result := db.Model(&User{}).Where("id = 2").Update("name", "ジョージ")
+	if result.Error != nil {
+		log.Fatal(result.Error)
+	}
+	fmt.Println("count:", result.RowsAffected)
+
+	user := User{}
+	db.Where("id = 2").Take(&user)
+	fmt.Println("user:", user)
 }
 
 // 複数のカラムを更新する
 func updates(db *gorm.DB) {
-	db.Model(&User{}).Updates(User{Name: "太郎"})
+	result := db.Model(&User{}).Where("id = 1").Updates(User{Name: "Taro", Age: 10, IsActive: true})
+	if result.Error != nil {
+		log.Fatal(result.Error)
+	}
+	fmt.Println("count:", result.RowsAffected)
 
+	user := User{}
+	db.Where("id = 1").Take(&user)
+	fmt.Println("user:", user)
 }
 
 // 削除
