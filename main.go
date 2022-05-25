@@ -53,10 +53,11 @@ func main() {
 	// 複数のカラムの更新
 	// updates(db)
 
-	// 削除
-	delete(db)
 	// 一括更新
 	updatesAll(db)
+
+	// 削除
+	// delete(db)
 }
 
 func dbInit() *gorm.DB {
