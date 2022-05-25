@@ -51,7 +51,10 @@ func main() {
 	// update(db)
 
 	// 複数のカラムの更新
-	updates(db)
+	// updates(db)
+
+	// 削除
+	delete(db)
 }
 
 func dbInit() *gorm.DB {
@@ -243,6 +246,7 @@ func delete(db *gorm.DB) {
 
 // 複数のカラムを更新する
 // Updatesは構造体もしくはmap[string]interface{}での更新に対応しています
+
 // 構造体での更新の時はゼロ値の更新はしない
 // ゼロ値のフィールドも更新対象に含める場合は、更新にmapを使用するか、 Select で更新するフィールドを指定してください。
 
