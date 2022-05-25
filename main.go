@@ -51,7 +51,10 @@ func main() {
 	// update(db)
 
 	// 複数のカラムの更新
-	updates(db)
+	// updates(db)
+
+	// 一括更新
+	updatesAll(db)
 }
 
 func dbInit() *gorm.DB {
@@ -218,6 +221,24 @@ func updates(db *gorm.DB) {
 	user := User{}
 	db.Where("id = 1").Take(&user)
 	fmt.Println("user:", user)
+}
+
+// 一括更新
+func updatesAll(db *gorm.DB) {
+	user := User{
+		Name:     "Ryu",
+		Age:      100,
+		IsActive: true,
+	}
+	result := db.Where("name = ?", "花子").Updates(&user)
+	if result.Error != nil {
+		log.Fatal(result.Error)
+	}
+	fmt.Println("count:", result.RowsAffected)
+
+	users := []User{}
+	db.Find(&users)
+	fmt.Println("users:", users)
 }
 
 // 削除
