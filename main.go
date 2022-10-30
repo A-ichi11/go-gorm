@@ -284,4 +284,4 @@ func delete(db *gorm.DB) {
 // db.Select("name", "age").Find(&users)
 
 // 特定のカラムのみ除外して取得
-db.Omit("name", "age").Find(&users)
+// db.Omit("name", "age").Find(&users)
